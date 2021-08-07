@@ -1,8 +1,7 @@
 import Layout from '@/components/Layout';
 import toast from '@/helpers/toast';
-import { GetServerSideProps } from 'next';
 
-const Home = ({ data }) => {
+const Home = () => {
   return (
     <Layout title='test'>
       <div className='px-4 py-6 sm:px-0'>
@@ -21,17 +20,6 @@ const Home = ({ data }) => {
       </div>
     </Layout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async context => {
-  // console.log(context.req.cookies);
-
-  return {
-    props: {
-      data: 'Hello world 1',
-      cookies: context.req.cookies,
-    },
-  };
 };
 
 export default Home;

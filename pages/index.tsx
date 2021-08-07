@@ -3,7 +3,7 @@ import toast from '@/helpers/toast';
 
 const Home = () => {
   return (
-    <Layout title='test'>
+    <Layout>
       <div className='px-4 py-6 sm:px-0'>
         <button
           onClick={() => toast('success', 'Success !')}

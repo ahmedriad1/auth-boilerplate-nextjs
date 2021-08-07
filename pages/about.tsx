@@ -1,13 +1,7 @@
-const About = ({ data }) => {
-  return <h1>{data}</h1>;
-};
+import Layout from '@/components/Layout';
 
-export const getServerSideProps = () => {
-  return {
-    props: {
-      data: 'Hello world 2',
-    },
-  };
+const About = () => {
+  return <Layout title='About'></Layout>;
 };
 
 export default About;

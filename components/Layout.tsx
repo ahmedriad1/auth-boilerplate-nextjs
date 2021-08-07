@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Nav from './Nav';
 
-const Layout = ({ title, children }) => {
+const Layout: React.FC<{ title?: string }> = ({ title = 'Home', children }) => {
   return (
     <>
       <Head>
@@ -14,9 +14,7 @@ const Layout = ({ title, children }) => {
 
         <header className='bg-white shadow'>
           <div className='max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8'>
-            <h1 className='text-3xl font-bold leading-tight text-gray-900'>
-              {title || 'Home'}
-            </h1>
+            <h1 className='text-3xl font-bold leading-tight text-gray-900'>{title}</h1>
           </div>
         </header>
 

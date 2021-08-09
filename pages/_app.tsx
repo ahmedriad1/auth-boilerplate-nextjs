@@ -1,59 +1,59 @@
-import useAuthStore from '@/stores/useAuthStore';
 import '@/styles/main.css';
-import { useEffect, useState } from 'react';
+import {
+  initializeAuthStore,
+  AuthStoreProvider,
+  useCreateAuthStore,
+} from '@/stores/useAuthStore';
 import { Toaster } from 'react-hot-toast';
 import axios from '@/helpers/axios';
 import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
-import { setRefreshToken, getRefreshToken } from '@/helpers/auth';
-import { useRouter } from 'next/router';
+import { REFRESH_TOKEN_NAME } from '@/helpers/auth';
+import App from 'next/app';
+import type { AppProps } from 'next/app';
+import { isBrowser } from '@/helpers/functions';
 
-const MyApp = ({ Component, pageProps }) => {
-  const login = useAuthStore(state => state.login);
-  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+interface MyAppProps extends AppProps {
+  initialZustandState: object;
+}
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      let refreshToken = getRefreshToken();
-
-      if (refreshToken) {
-        try {
-          const {
-            data: { user, token },
-          } = await axios.post<IAuthenticatedResponse>('/auth/refresh', {
-            refresh_token: refreshToken,
-          });
-          login({ user, token });
-          setIsLoading(false);
-        } catch (error) {
-          setRefreshToken(null);
-          setIsLoading(false);
-        }
-      } else setIsLoading(false);
-    };
-
-    checkAuth();
-  }, []);
-
-  if (isLoading) return null;
-
-  if (pageProps.protected && !isLoggedIn) {
-    router.push('/login');
-    return null;
-  }
-
-  if (pageProps.guest && isLoggedIn) {
-    router.push('/');
-    return null;
-  }
+const MyApp = ({ Component, pageProps, initialZustandState }: MyAppProps) => {
+  const createStore = useCreateAuthStore(initialZustandState);
 
   return (
     <div className='app relative'>
-      <Toaster position='top-right' reverseOrder={false} />
-      <Component {...pageProps} />
+      <AuthStoreProvider createStore={createStore}>
+        <Toaster position='top-right' reverseOrder={false} />
+        <Component {...pageProps} />
+      </AuthStoreProvider>
     </div>
   );
+};
+
+MyApp.getInitialProps = async appContext => {
+  const appProps = await App.getInitialProps(appContext);
+
+  if (isBrowser()) return { ...appProps };
+
+  const store = initializeAuthStore();
+
+  const request = appContext.ctx.req;
+  const refreshToken = request ? request.cookies[REFRESH_TOKEN_NAME] : null;
+
+  if (refreshToken) {
+    try {
+      const { data } = await axios.post<IAuthenticatedResponse>('/auth/refresh', {
+        refresh_token: refreshToken,
+      });
+      store.getState().login({ user: data.user, token: data.token });
+    } catch (error) {
+      request.cookies[REFRESH_TOKEN_NAME] = null;
+    }
+  }
+
+  return {
+    ...appProps,
+    initialZustandState: JSON.parse(JSON.stringify(store.getState())),
+  };
 };
 
 export default MyApp;

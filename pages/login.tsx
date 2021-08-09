@@ -9,6 +9,7 @@ import axios from '@/helpers/axios';
 import Link from 'next/link';
 import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
 import HeadlessLayout from '@/components/HeadlessLayout';
+import withGuest from '@/helpers/withGuest';
 
 const Login = () => {
   const setLogin = useAuthStore(state => state.login);
@@ -24,9 +25,6 @@ const Login = () => {
       const {
         data: { user, token, refresh_token },
       } = await axios.post<IAuthenticatedResponse>('/auth/login', data);
-
-      console.log(user);
-      console.log(refresh_token);
 
       setLoading(false);
       toast('success', 'Logged in successfully !');
@@ -82,12 +80,4 @@ const Login = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      guest: true,
-    },
-  };
-}
-
-export default Login;
+export default withGuest(Login);

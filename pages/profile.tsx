@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import toast from '@/helpers/toast';
 import axios from '@/helpers/axios';
 import IUser from '@/interfaces/IUser';
+import withAuth from '@/helpers/withAuth';
 
 const Profile = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
@@ -147,12 +148,4 @@ const Profile = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      protected: true,
-    },
-  };
-}
-
-export default Profile;
+export default withAuth(Profile);

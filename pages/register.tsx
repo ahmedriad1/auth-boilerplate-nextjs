@@ -9,6 +9,7 @@ import axios from '@/helpers/axios';
 import Link from 'next/link';
 import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
 import HeadlessLayout from '@/components/HeadlessLayout';
+import withGuest from '@/helpers/withGuest';
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -96,12 +97,4 @@ const Register = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      guest: true,
-    },
-  };
-}
-
-export default Register;
+export default withGuest(Register);

@@ -1,11 +1,79 @@
 import Link from 'next/link';
-import { Transition } from '@headlessui/react';
-import { useState } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { Fragment, useState } from 'react';
 import useAuthStore from '@/stores/useAuthStore';
 import toast from '@/helpers/toast';
+import LazyImage from '@/components/LazyImage';
+
+const ProfileDropdown = () => {
+  const setLogout = useAuthStore(state => state.logout);
+
+  const logout = e => {
+    e.preventDefault();
+    setLogout();
+    toast('success', 'Logged out !');
+  };
+
+  const ProfileLink = ({ active, ...props }: { active: boolean }) => (
+    <Link href='/profile'>
+      <a
+        className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`}
+        {...props}
+      >
+        Your Profile
+      </a>
+    </Link>
+  );
+
+  return (
+    <Menu as='div' className='ml-3 relative'>
+      <div>
+        <Menu.Button className='max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid'>
+          <LazyImage
+            width={32}
+            height={32}
+            className='h-8 w-8 rounded-full'
+            src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+            alt='Profile picture'
+          />
+        </Menu.Button>
+      </div>
+      <Transition
+        as={Fragment}
+        enter='transition ease-out duration-100 transform'
+        enterFrom='opacity-0 scale-95'
+        enterTo='opacity-100 scale-100'
+        leave='transition ease-in duration-75 transform'
+        leaveFrom='opacity-100 scale-100'
+        leaveTo='opacity-0 scale-95'
+      >
+        <Menu.Items className='origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg'>
+          <div className='py-1 rounded-md bg-white shadow-xs'>
+            <Menu.Item>
+              {/* I did that because i wanted to pass the menu item props to the <a> not <Link> */}
+              {({ active }) => <ProfileLink active={active} />}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <a
+                  href='/logout'
+                  onClick={logout}
+                  className={`block px-4 py-2 text-sm text-gray-700 ${
+                    active ? 'bg-gray-100' : ''
+                  }`}
+                >
+                  Sign out
+                </a>
+              )}
+            </Menu.Item>
+          </div>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+};
 
 const Nav = () => {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const { isLoggedIn, user, logout: setLogout } = useAuthStore();
 
@@ -21,7 +89,13 @@ const Nav = () => {
         <div className='flex items-center justify-between h-16'>
           <div className='flex items-center'>
             <div className='flex-shrink-0'>
-              <img className='h-8 w-8' src='/logo.svg' alt='Workflow logo' />
+              <LazyImage
+                src='/logo.svg'
+                width={32}
+                height={32}
+                className='h-8 w-8'
+                alt='Logo'
+              />
             </div>
             <div className='hidden md:block'>
               <div className='ml-10 flex items-baseline'>
@@ -48,58 +122,7 @@ const Nav = () => {
           <div className='hidden md:block'>
             {isLoggedIn ? (
               <div className='ml-4 flex items-center md:ml-6'>
-                <div className='ml-3 relative'>
-                  <div>
-                    <button
-                      className='max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none focus:shadow-solid'
-                      id='user-menu'
-                      aria-label='User menu'
-                      aria-haspopup='true'
-                      onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    >
-                      <img
-                        className='h-8 w-8 rounded-full'
-                        src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-                        alt=''
-                      />
-                    </button>
-                  </div>
-                  <Transition
-                    show={isProfileOpen}
-                    enter='transition ease-out duration-100 transform'
-                    enterFrom='opacity-0 scale-95'
-                    enterTo='opacity-100 scale-100'
-                    leave='transition ease-in duration-75 transform'
-                    leaveFrom='opacity-100 scale-100'
-                    leaveTo='opacity-0 scale-95'
-                  >
-                    <div className='origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg'>
-                      <div
-                        className='py-1 rounded-md bg-white shadow-xs'
-                        role='menu'
-                        aria-orientation='vertical'
-                        aria-labelledby='user-menu'
-                      >
-                        <Link href='/profile'>
-                          <a
-                            role='menuitem'
-                            className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                          >
-                            Your Profile
-                          </a>
-                        </Link>
-                        <a
-                          href='/logout'
-                          onClick={logout}
-                          className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                          role='menuitem'
-                        >
-                          Sign out
-                        </a>
-                      </div>
-                    </div>
-                  </Transition>
-                </div>
+                <ProfileDropdown />
               </div>
             ) : (
               <div>
@@ -183,10 +206,12 @@ const Nav = () => {
               <>
                 <div className='flex items-center px-5'>
                   <div className='flex-shrink-0'>
-                    <img
+                    <LazyImage
+                      width={40}
+                      height={40}
                       className='h-10 w-10 rounded-full'
                       src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-                      alt=''
+                      alt='Profile picture'
                     />
                   </div>
                   <div className='ml-3'>

@@ -10,6 +10,7 @@ import Link from 'next/link';
 import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
 import HeadlessLayout from '@/components/HeadlessLayout';
 import withGuest from '@/helpers/withGuest';
+import LazyImage from '@/components/LazyImage';
 
 const Login = () => {
   const setLogin = useAuthStore(state => state.login);
@@ -42,10 +43,12 @@ const Login = () => {
           <div>
             <Link href='/'>
               <a>
-                <img
+                <LazyImage
+                  width={48}
+                  height={48}
                   className='mx-auto h-12 w-auto'
                   src='/logo-white.svg'
-                  alt='Workflow'
+                  alt='Logo'
                 />
               </a>
             </Link>

@@ -47,7 +47,7 @@ const Register = () => {
         <div className='max-w-md w-full'>
           <div>
             <Link href='/'>
-              <a>
+              <a className='flex justify-center'>
                 <LazyImage
                   width={48}
                   height={48}

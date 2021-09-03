@@ -1,6 +1,6 @@
 import { setToken, getRefreshToken } from '@/helpers/auth';
 import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
-import useAuthStore from '@/stores/useAuthStore';
+import { getAuthStore } from '@/stores/useAuthStore';
 import axios from 'axios';
 import { unstable_batchedUpdates } from 'react-dom';
 
@@ -10,7 +10,7 @@ const instance = axios.create({
 
 const logout = () => {
   unstable_batchedUpdates(() => {
-    useAuthStore.getState().logout();
+    getAuthStore().getState().logout();
   });
 };
 

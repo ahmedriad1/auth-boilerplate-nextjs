@@ -61,3 +61,5 @@ export function useCreateAuthStore(initialState): () => UseStore<IAuthStore> {
 
   return () => store;
 }
+
+export const getAuthStore: () => UseStore<IAuthStore> = () => store;

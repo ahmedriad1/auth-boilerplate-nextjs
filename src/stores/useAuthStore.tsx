@@ -1,9 +1,10 @@
 import { useLayoutEffect } from 'react';
-import createContext, { UseContextStore } from 'zustand/context';
+import createContext from 'zustand/context';
 import { isBrowser } from '@/helpers/functions';
 import create from 'zustand';
-import type { UseBoundStore } from 'zustand';
 import { setToken, setRefreshToken } from '@/helpers/auth';
+import type { UseContextStore } from 'zustand/context';
+import type { UseBoundStore } from 'zustand';
 import type { User } from '@/types';
 
 interface IAuthStore {

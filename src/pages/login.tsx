@@ -7,9 +7,9 @@ import * as yup from 'yup';
 import toast from '@/helpers/toast';
 import axios from '@/helpers/axios';
 import Link from 'next/link';
-import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
 import HeadlessLayout from '@/components/HeadlessLayout';
 import withGuest from '@/helpers/withGuest';
+import type { AuthenticatedResponse } from '@/types';
 import LazyImage from '@/components/LazyImage';
 
 const Login = () => {
@@ -25,13 +25,12 @@ const Login = () => {
     try {
       const {
         data: { user, token, refresh_token },
-      } = await axios.post<IAuthenticatedResponse>('/auth/login', data);
-
-      setLoading(false);
+      } = await axios.post<AuthenticatedResponse>('/auth/login', data);
       toast('success', 'Logged in successfully !');
       setLogin({ user, token, refreshToken: refresh_token });
     } catch (err) {
       toast('error', err?.response?.data?.message);
+    } finally {
       setLoading(false);
     }
   };

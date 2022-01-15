@@ -1,15 +1,16 @@
 import { useLayoutEffect } from 'react';
 import createContext, { UseContextStore } from 'zustand/context';
 import { isBrowser } from '@/helpers/functions';
-import create, { UseStore } from 'zustand';
+import create from 'zustand';
+import type { UseBoundStore } from 'zustand';
 import { setToken, setRefreshToken } from '@/helpers/auth';
-import IUser from '@/interfaces/IUser';
+import type { User } from '@/types';
 
 interface IAuthStore {
   isLoggedIn: boolean;
-  user: null | IUser;
-  login: (data: { user: IUser; token: string; refreshToken?: string }) => any;
-  updateUser: (user: IUser) => any;
+  user: null | User;
+  login: (data: { user: User; token: string; refreshToken?: string }) => any;
+  updateUser: (user: User) => any;
   logout: () => any;
 }
 
@@ -46,7 +47,7 @@ export const initializeAuthStore = (preloadedState = {}) => {
   }));
 };
 
-export function useCreateAuthStore(initialState): () => UseStore<IAuthStore> {
+export function useCreateAuthStore(initialState): () => UseBoundStore<IAuthStore> {
   if (!isBrowser()) return () => initializeAuthStore(initialState);
 
   store = store ?? initializeAuthStore(initialState);
@@ -62,4 +63,4 @@ export function useCreateAuthStore(initialState): () => UseStore<IAuthStore> {
   return () => store;
 }
 
-export const getAuthStore: () => UseStore<IAuthStore> = () => store;
+export const getAuthStore: () => UseBoundStore<IAuthStore> = () => store;

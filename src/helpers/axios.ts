@@ -1,8 +1,8 @@
 import { setToken, getRefreshToken } from '@/helpers/auth';
-import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
 import { getAuthStore } from '@/stores/useAuthStore';
 import axios from 'axios';
 import { unstable_batchedUpdates } from 'react-dom';
+import type { AuthenticatedResponse } from '@/types';
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -30,7 +30,7 @@ instance.interceptors.response.use(undefined, async error => {
   }
 
   try {
-    const { data } = await instance.post<IAuthenticatedResponse>('/auth/refresh', {
+    const { data } = await instance.post<AuthenticatedResponse>('/auth/refresh', {
       refresh_token: refreshToken,
     });
     setToken(data.token);

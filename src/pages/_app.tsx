@@ -6,11 +6,11 @@ import {
 } from '@/stores/useAuthStore';
 import { Toaster } from 'react-hot-toast';
 import axios from '@/helpers/axios';
-import IAuthenticatedResponse from '@/interfaces/IAuthenticatedResponse';
 import { REFRESH_TOKEN_NAME } from '@/helpers/auth';
 import App from 'next/app';
-import type { AppProps } from 'next/app';
 import { isBrowser } from '@/helpers/functions';
+import type { AppProps } from 'next/app';
+import type { AuthenticatedResponse } from '@/types';
 
 interface MyAppProps extends AppProps {
   initialZustandState: object;
@@ -41,7 +41,7 @@ MyApp.getInitialProps = async appContext => {
 
   if (refreshToken) {
     try {
-      const { data } = await axios.post<IAuthenticatedResponse>('/auth/refresh', {
+      const { data } = await axios.post<AuthenticatedResponse>('/auth/refresh', {
         refresh_token: refreshToken,
       });
       store.getState().login({ user: data.user, token: data.token });

@@ -6,8 +6,8 @@ import FormInput from '@/components/Form/FormInput';
 import * as yup from 'yup';
 import toast from '@/helpers/toast';
 import axios from '@/helpers/axios';
-import IUser from '@/interfaces/IUser';
 import withAuth from '@/helpers/withAuth';
+import type { User } from '@/types';
 
 const Profile = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
@@ -31,27 +31,27 @@ const Profile = () => {
   });
 
   const updateDetails = async newData => {
+    setDetailsLoading(true);
     try {
-      setDetailsLoading(true);
-      const { data } = await axios.patch<IUser>('/auth/update', newData);
+      const { data } = await axios.patch<User>('/auth/update', newData);
       toast('success', 'Updated successfully !');
-      setDetailsLoading(false);
       updateUser(data);
     } catch (err) {
-      setDetailsLoading(false);
       toast('error', err?.response?.data?.message);
+    } finally {
+      setDetailsLoading(false);
     }
   };
 
   const updatePassword = async data => {
+    setPasswordLoading(true);
     try {
-      setPasswordLoading(true);
       await axios.patch('/auth/update', { password: data.password });
       toast('success', 'Password updated successfully !');
-      setPasswordLoading(false);
     } catch (err) {
-      setPasswordLoading(false);
       toast('error', err?.response?.data?.message);
+    } finally {
+      setPasswordLoading(false);
     }
   };
 

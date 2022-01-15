@@ -15,12 +15,14 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/helpers/*": ["helpers/*"],
-      "@/stores/*": ["stores/*"],
-      "@/pages/*": ["pages/*"],
-      "@/interfaces/*": ["interfaces/*"],
-      "@/styles/*": ["styles/*"],
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/helpers/*": ["./src/helpers/*"],
+      "@/stores/*": ["./src/stores/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/types": ["./src/types/index.ts"],
+      "@/styles/*": ["./src/styles/*"],
       "@/public/*": ["public/*"]
     }
   },

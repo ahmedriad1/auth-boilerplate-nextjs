@@ -1,21 +1,21 @@
 import { useLayoutEffect } from 'react';
 import createContext from 'zustand/context';
 import { isBrowser } from '@/helpers/functions';
-import create from 'zustand';
+import create, { StoreApi } from 'zustand';
 import { setToken, setRefreshToken } from '@/helpers/auth';
-import type { UseContextStore } from 'zustand/context';
 import type { UseBoundStore } from 'zustand';
 import type { User } from '@/types';
 
-interface IAuthStore {
+interface IAuthState {
   isLoggedIn: boolean;
   user: null | User;
   login: (data: { user: User; token: string; refreshToken?: string }) => any;
   updateUser: (user: User) => any;
   logout: () => any;
 }
+type IAuthStore = UseBoundStore<StoreApi<IAuthState>>;
 
-let store;
+let store: IAuthStore;
 
 const initialState = {
   isLoggedIn: false,
@@ -25,11 +25,11 @@ const initialState = {
 const AuthStoreContext = createContext<IAuthStore>();
 export const AuthStoreProvider = AuthStoreContext.Provider;
 
-const useAuthStore: UseContextStore<IAuthStore> = AuthStoreContext.useStore;
+const useAuthStore: typeof AuthStoreContext.useStore = AuthStoreContext.useStore;
 export default useAuthStore;
 
 export const initializeAuthStore = (preloadedState = {}) => {
-  return create<IAuthStore>(set => ({
+  return create<IAuthState>(set => ({
     ...initialState,
     ...preloadedState,
     login: ({ user, token, refreshToken }) =>
@@ -48,7 +48,7 @@ export const initializeAuthStore = (preloadedState = {}) => {
   }));
 };
 
-export function useCreateAuthStore(initialState): () => UseBoundStore<IAuthStore> {
+export function useCreateAuthStore(initialState): () => IAuthStore {
   if (!isBrowser()) return () => initializeAuthStore(initialState);
 
   store = store ?? initializeAuthStore(initialState);
@@ -64,4 +64,4 @@ export function useCreateAuthStore(initialState): () => UseBoundStore<IAuthStore
   return () => store;
 }
 
-export const getAuthStore: () => UseBoundStore<IAuthStore> = () => store;
+export const getAuthStore: () => IAuthStore = () => store;

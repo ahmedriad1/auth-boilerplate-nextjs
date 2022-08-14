@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
-import useAuthStore from '@/stores/useAuthStore';
 import toast from '@/helpers/toast';
 import LazyImage from '@/components/LazyImage';
+import clsx from 'clsx';
+import useAuthStore from '@/stores/useAuthStore';
 
 const ProfileDropdown = () => {
   const setLogout = useAuthStore(state => state.logout);
@@ -11,13 +12,13 @@ const ProfileDropdown = () => {
   const logout = e => {
     e.preventDefault();
     setLogout();
-    toast('success', 'Logged out !');
+    toast.success('Logged out !');
   };
 
   const ProfileLink = ({ active, ...props }: { active: boolean }) => (
     <Link href='/profile'>
       <a
-        className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`}
+        className={clsx('block px-4 py-2 text-sm text-gray-700', active && 'bg-gray-100')}
         {...props}
       >
         Your Profile
@@ -58,9 +59,10 @@ const ProfileDropdown = () => {
                 <a
                   href='/logout'
                   onClick={logout}
-                  className={`block px-4 py-2 text-sm text-gray-700 ${
-                    active ? 'bg-gray-100' : ''
-                  }`}
+                  className={clsx(
+                    'block px-4 py-2 text-sm text-gray-700',
+                    active && 'bg-gray-100',
+                  )}
                 >
                   Sign out
                 </a>
@@ -80,7 +82,7 @@ const Nav = () => {
   const logout = e => {
     e.preventDefault();
     setLogout();
-    toast('success', 'Logged out !');
+    toast.success('Logged out !');
   };
 
   return (

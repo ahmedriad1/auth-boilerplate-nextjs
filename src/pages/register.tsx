@@ -1,11 +1,10 @@
-import { useState } from 'react';
 import Button from '@/components/Button';
 import useAuthStore from '@/stores/useAuthStore';
 import toast from '../helpers/toast';
 import Form from '@/components/Form';
 import FormInput from '@/components/Form/FormInput';
 import * as yup from 'yup';
-import axios from '@/helpers/axios';
+import { useMutation } from '@/helpers/axios';
 import Link from 'next/link';
 import HeadlessLayout from '@/components/HeadlessLayout';
 import withGuest from '@/helpers/withGuest';
@@ -13,7 +12,6 @@ import LazyImage from '@/components/LazyImage';
 import type { AuthenticatedResponse } from '@/types';
 
 const Register = () => {
-  const [loading, setLoading] = useState(false);
   const schema = yup.object().shape({
     name: yup.string().required(),
     email: yup.string().email().required(),
@@ -24,22 +22,17 @@ const Register = () => {
       .oneOf([yup.ref('password'), null], 'Passwords must match')
       .required(),
   });
-  const login = useAuthStore(state => state.login);
 
-  const onSubmit = async data => {
-    setLoading(true);
-    try {
-      const {
-        data: { user, token, refresh_token },
-      } = await axios.post<AuthenticatedResponse>('/auth/register', data);
-      toast('success', 'Account created successfully !');
-      login({ user, token, refreshToken: refresh_token });
-    } catch (err) {
-      toast('error', err?.response?.data?.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const login = useAuthStore(state => state.login);
+  const [registerMutation, { loading }] = useMutation<AuthenticatedResponse>(
+    '/auth/register',
+    {
+      onSuccess({ user, token, refresh_token }) {
+        toast.success('Account created successfully !');
+        login({ user, token, refreshToken: refresh_token });
+      },
+    },
+  );
 
   return (
     <HeadlessLayout>
@@ -69,7 +62,7 @@ const Register = () => {
               </Link>
             </p>
           </div>
-          <Form className='mt-8' onSubmit={onSubmit} schema={schema}>
+          <Form className='mt-8' onSubmit={registerMutation} schema={schema}>
             <div>
               <div>
                 <FormInput name='name' type='text' placeholder='Name' />

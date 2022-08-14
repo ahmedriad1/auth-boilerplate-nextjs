@@ -1,11 +1,10 @@
-import { useState } from 'react';
 import Button from '@/components/Button';
 import useAuthStore from '@/stores/useAuthStore';
 import Form from '@/components/Form';
 import FormInput from '@/components/Form/FormInput';
 import * as yup from 'yup';
 import toast from '@/helpers/toast';
-import axios from '@/helpers/axios';
+import { useMutation } from '@/helpers/axios';
 import Link from 'next/link';
 import HeadlessLayout from '@/components/HeadlessLayout';
 import withGuest from '@/helpers/withGuest';
@@ -14,26 +13,17 @@ import LazyImage from '@/components/LazyImage';
 
 const Login = () => {
   const setLogin = useAuthStore(state => state.login);
-  const [loading, setLoading] = useState(false);
+  const [loginMutation, { loading }] = useMutation<AuthenticatedResponse>('/auth/login', {
+    onSuccess: ({ user, token, refresh_token }) => {
+      toast.success('Logged in successfully !');
+      setLogin({ user, token, refreshToken: refresh_token });
+    },
+  });
+
   const schema = yup.object().shape({
     email: yup.string().email().required(),
     password: yup.string().required(),
   });
-
-  const onSubmit = async data => {
-    setLoading(true);
-    try {
-      const {
-        data: { user, token, refresh_token },
-      } = await axios.post<AuthenticatedResponse>('/auth/login', data);
-      toast('success', 'Logged in successfully !');
-      setLogin({ user, token, refreshToken: refresh_token });
-    } catch (err) {
-      toast('error', err?.response?.data?.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <HeadlessLayout>
@@ -63,7 +53,7 @@ const Login = () => {
               </Link>
             </p>
           </div>
-          <Form onSubmit={onSubmit} schema={schema} className='mt-8'>
+          <Form onSubmit={loginMutation} schema={schema} className='mt-8'>
             <div>
               <div>
                 <FormInput name='email' type='email' placeholder='Email address' />

@@ -1,7 +1,12 @@
 import Head from 'next/head';
 import Nav from './Nav';
 
-const Layout: React.FC<{ title?: string }> = ({ title = 'Home', children }) => {
+interface LayoutProps {
+  title?: string;
+  children: React.ReactNode;
+}
+
+const Layout = ({ title = 'Home', children }: LayoutProps) => {
   return (
     <>
       <Head>

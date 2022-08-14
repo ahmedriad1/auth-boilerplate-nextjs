@@ -1,7 +1,7 @@
 import '@/styles/main.css';
 import {
-  initializeAuthStore,
   AuthStoreProvider,
+  initializeAuthStore,
   useCreateAuthStore,
 } from '@/stores/useAuthStore';
 import { Toaster } from 'react-hot-toast';
@@ -11,9 +11,10 @@ import App from 'next/app';
 import { isBrowser } from '@/helpers/functions';
 import type { AppProps } from 'next/app';
 import type { AuthenticatedResponse } from '@/types';
+// import NextApp from 'next/app';
 
 interface MyAppProps extends AppProps {
-  initialZustandState: object;
+  initialZustandState: any;
 }
 
 const MyApp = ({ Component, pageProps, initialZustandState }: MyAppProps) => {

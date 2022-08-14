@@ -1,7 +1,13 @@
 import { Transition } from '@headlessui/react';
+import clsx from 'clsx';
 import { toast as makeToast } from 'react-hot-toast';
 
-const toast = (type: 'error' | 'success', message: string) => {
+enum ToastType {
+  Success = 'success',
+  Error = 'error',
+}
+
+const baseToast = (type: ToastType, message: string) => {
   return makeToast.custom(
     t => (
       <div className='max-w-md w-full'>
@@ -15,16 +21,18 @@ const toast = (type: 'error' | 'success', message: string) => {
           leaveTo='opacity-0 -translate-y-3'
         >
           <div
-            className={`${
-              t.visible ? 'animate-enter' : 'animate-leave'
-            } bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+            className={clsx(
+              t.visible ? 'animate-enter' : 'animate-leave',
+              'bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5',
+            )}
           >
             <div className='flex-1 w-0 p-3 px-5'>
               <div className='flex items-center text-base'>
                 <svg
-                  className={`w-6 h-6 mr-4 stroke-current ${
-                    type === 'success' ? 'text-green-500' : 'text-red-500'
-                  }`}
+                  className={clsx(
+                    'w-6 h-6 mr-4 stroke-current',
+                    type === 'success' ? 'text-green-500' : 'text-red-500',
+                  )}
                   fill='none'
                   strokeLinecap='round'
                   strokeLinejoin='round'
@@ -56,6 +64,11 @@ const toast = (type: 'error' | 'success', message: string) => {
     ),
     { duration: 3000 },
   );
+};
+
+const toast = {
+  [ToastType.Success]: (message: string) => baseToast(ToastType.Success, message),
+  [ToastType.Error]: (message: string) => baseToast(ToastType.Error, message),
 };
 
 export default toast;

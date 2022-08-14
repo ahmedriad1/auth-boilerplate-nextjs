@@ -1,10 +1,12 @@
 import { setToken, getRefreshToken } from '@/helpers/auth';
-import { getAuthStore } from '@/stores/useAuthStore';
-import axios from 'axios';
-import { unstable_batchedUpdates } from 'react-dom';
+import axios, { AxiosError } from 'axios';
 import type { AuthenticatedResponse } from '@/types';
+import { useEffect, useState } from 'react';
+import { unstable_batchedUpdates } from 'react-dom';
+import { getAuthStore } from '@/stores/useAuthStore';
+import toast from './toast';
 
-const instance = axios.create({
+const request = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
 });
 
@@ -14,7 +16,7 @@ const logout = () => {
   });
 };
 
-instance.interceptors.response.use(undefined, async error => {
+request.interceptors.response.use(undefined, async error => {
   const {
     response: { status },
     config,
@@ -30,16 +32,75 @@ instance.interceptors.response.use(undefined, async error => {
   }
 
   try {
-    const { data } = await instance.post<AuthenticatedResponse>('/auth/refresh', {
+    const { data } = await request.post<AuthenticatedResponse>('/auth/refresh', {
       refresh_token: refreshToken,
     });
     setToken(data.token);
     config.headers['Authorization'] = `Bearer ${data.token}`;
-    return instance.request(config);
+    return request.request(config);
   } catch (error) {
     logout();
     return Promise.reject('Logged out');
   }
 });
 
-export default instance;
+export default request;
+
+export const useRequest = <T>(url: string) => {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<AxiosError>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const { data } = await request.get<T>(url);
+        setData(data);
+      } catch (error) {
+        setError(error as AxiosError<any>);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [url]);
+
+  return { data, loading, error };
+};
+
+interface UseMutationProps<T> {
+  onSuccess?: (data: T) => void;
+  onError?: (error: AxiosError) => void;
+}
+
+export const useMutation = <T>(
+  url: string,
+  { onSuccess, onError }: UseMutationProps<T> = {},
+): [
+  (body: any) => Promise<void>,
+  { data: T | null; loading: boolean; error: AxiosError | null },
+] => {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<AxiosError>(null);
+
+  return [
+    async (body: any) => {
+      setLoading(true);
+      try {
+        const { data } = await request.post<T>(url, body);
+        setData(data);
+        if (onSuccess) onSuccess(data);
+      } catch (error) {
+        setError(error as AxiosError<any>);
+        const message = error?.response?.data?.message;
+        if (message) toast.error(message);
+        if (onError) onError(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    { data, loading, error },
+  ];
+};

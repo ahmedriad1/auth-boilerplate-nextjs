@@ -8,6 +8,7 @@ import { useMutation } from '@/helpers/axios';
 import withAuth from '@/helpers/withAuth';
 import type { User } from '@/types';
 import Spinner from '@/components/Spinner';
+import Button from '@/components/Button';
 
 const Profile = () => {
   return (
@@ -28,6 +29,7 @@ const DetailsForm = () => {
   });
 
   const [updateMutation, { loading }] = useMutation<User>('/auth/update', {
+    method: 'patch',
     onSuccess(data) {
       toast.success('Updated successfully !');
       updateUser(data);
@@ -57,14 +59,9 @@ const DetailsForm = () => {
             <FormInput name='email' id='email' type='email' />
           </div>
         </div>
-        <button
-          className='px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600
-            text-white mt-6 focus:outline-none focus:bg-indigo-600 flex justify-center
-            items-center'
-          type='submit'
-        >
-          {loading ? <Spinner /> : 'Update Details'}
-        </button>
+        <Button className='mt-6' loading={loading}>
+          Update Details
+        </Button>
       </Form>
     </div>
   );
@@ -81,6 +78,7 @@ const PasswordForm = () => {
   });
 
   const [updatePasswordMutation, { loading }] = useMutation('/auth/update', {
+    method: 'patch',
     onSuccess() {
       toast.success('Password updated successfully !');
     },
@@ -95,10 +93,10 @@ const PasswordForm = () => {
         schema={passwordsSchema}
       >
         <div>
-          <label htmlFor='current_password' className='block text-sm mb-2'>
+          <label htmlFor='old_password' className='block text-sm mb-2'>
             Current Password
           </label>
-          <FormInput name='current_password' id='current_password' type='password' />
+          <FormInput name='old_password' id='old_password' type='password' />
         </div>
         <div className='sm:flex space-y-6 sm:space-x-8 sm:space-y-0'>
           <div className='sm:w-1/2'>
@@ -114,14 +112,9 @@ const PasswordForm = () => {
             <FormInput name='confirm_password' id='confirm_password' type='password' />
           </div>
         </div>
-        <button
-          className='px-4 py-2 rounded bg-indigo-500 hover:bg-indigo-600
-            text-white mt-6 focus:outline-none focus:bg-indigo-600 flex justify-center
-            items-center'
-          type='submit'
-        >
-          {loading ? <Spinner /> : 'Update Password'}
-        </button>
+        <Button className='mt-6' loading={loading}>
+          Update Password
+        </Button>
       </Form>
     </div>
   );

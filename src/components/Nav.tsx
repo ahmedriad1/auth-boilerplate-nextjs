@@ -5,6 +5,7 @@ import toast from '@/helpers/toast';
 import LazyImage from '@/components/LazyImage';
 import clsx from 'clsx';
 import useAuthStore from '@/stores/useAuthStore';
+import Button from './Button';
 
 const ProfileDropdown = () => {
   const setLogout = useAuthStore(state => state.logout);
@@ -110,14 +111,6 @@ const Nav = () => {
                     Home
                   </a>
                 </Link>
-                <Link
-                  href='/about'
-                  // activeClassName='text-white bg-gray-900 hover:bg-gray-900'
-                >
-                  <a className='px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:text-white focus:bg-gray-700 text-gray-300 hover:text-white hover:bg-gray-700'>
-                    About
-                  </a>
-                </Link>
               </div>
             </div>
           </div>
@@ -128,17 +121,14 @@ const Nav = () => {
               </div>
             ) : (
               <div>
-                <Link href='/login'>
-                  <a className='ml-4 px-5 py-2 rounded-md text-sm font-medium text-gray-200 focus:outline-none focus:text-white focus:bg-indigo-600 hover:text-white hover:bg-indigo-600 bg-indigo-500'>
-                    Login
-                  </a>
+                <Link href='/login' passHref>
+                  <Button as='a'>Login</Button>
                 </Link>
               </div>
             )}
           </div>
 
           <div className='-mr-2 flex md:hidden'>
-            {/* <!-- Mobile menu button --> */}
             <button
               className='inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white'
               onClick={() => setIsNavOpen(!isNavOpen)}
@@ -177,10 +167,6 @@ const Nav = () => {
         </div>
       </div>
 
-      {/* <!--
-    Mobile menu, toggle classNamees based on menu state.
-    Open: "block", closed: "hidden"
-  --> */}
       {isNavOpen && (
         <div className='md:hidden'>
           <div className='px-2 pt-2 pb-3 sm:px-3'>
@@ -193,17 +179,8 @@ const Nav = () => {
                 Home
               </a>
             </Link>
-            <Link
-              href='/about'
-
-              // activeClassName='text-white bg-gray-900 hover:bg-gray-900'
-            >
-              <a className='block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:text-white focus:bg-gray-700 text-gray-300'>
-                About
-              </a>
-            </Link>
           </div>
-          <div className='pt-4 pb-3 border-t border-gray-700'>
+          <div className='py-4 px-2 border-t border-gray-700'>
             {isLoggedIn ? (
               <>
                 <div className='flex items-center px-5'>
@@ -241,10 +218,10 @@ const Nav = () => {
                 </div>
               </>
             ) : (
-              <Link href='/login'>
-                <a className='block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:text-white focus:bg-gray-700 bg-indigo-500 hover:bg-indigo-600 text-white mt-1 mx-2'>
+              <Link href='/login' passHref>
+                <Button as='a' className='my-1' full>
                   Login
-                </a>
+                </Button>
               </Link>
             )}
           </div>

@@ -62,7 +62,9 @@ const Login = () => {
                 <FormInput name='password' type='password' placeholder='Password' />
               </div>
               <div className='mt-6'>
-                <Button loading={loading}>Sign in</Button>
+                <Button loading={loading} full>
+                  Sign in
+                </Button>
               </div>
             </div>
           </Form>

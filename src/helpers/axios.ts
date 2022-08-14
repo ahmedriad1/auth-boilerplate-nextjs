@@ -48,7 +48,7 @@ export default request;
 
 export const useRequest = <T>(url: string) => {
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<AxiosError>();
 
   useEffect(() => {
@@ -69,27 +69,30 @@ export const useRequest = <T>(url: string) => {
   return { data, loading, error };
 };
 
+type MutationMethod = 'post' | 'put' | 'patch' | 'delete';
+
 interface UseMutationProps<T> {
   onSuccess?: (data: T) => void;
   onError?: (error: AxiosError) => void;
+  method?: MutationMethod;
 }
 
 export const useMutation = <T>(
   url: string,
-  { onSuccess, onError }: UseMutationProps<T> = {},
+  { onSuccess, onError, method = 'post' }: UseMutationProps<T> = {},
 ): [
   (body: any) => Promise<void>,
   { data: T | null; loading: boolean; error: AxiosError | null },
 ] => {
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<AxiosError>(null);
 
   return [
     async (body: any) => {
       setLoading(true);
       try {
-        const { data } = await request.post<T>(url, body);
+        const { data } = await request[method]<T>(url, body);
         setData(data);
         if (onSuccess) onSuccess(data);
       } catch (error) {

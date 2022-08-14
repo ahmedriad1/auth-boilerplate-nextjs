@@ -84,7 +84,9 @@ const Register = () => {
             </div>
 
             <div className='mt-6'>
-              <Button loading={loading}>Register</Button>
+              <Button loading={loading} full>
+                Register
+              </Button>
             </div>
           </Form>
         </div>

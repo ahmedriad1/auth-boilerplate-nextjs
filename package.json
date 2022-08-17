@@ -1,5 +1,12 @@
 {
   "private": true,
+  "name": "auth-boilerplate-nextjs",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ahmed Riad",
+    "email": "me@ar1.dev",
+    "url": "https://ar1.dev"
+  },
   "scripts": {
     "dev": "next dev -p 4040",
     "build": "next build",
@@ -7,6 +14,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.6.6",
+    "@heroicons/react": "^1.0.6",
     "@hookform/resolvers": "^2.7.9",
     "axios": "^0.21.1",
     "clsx": "^1.2.1",

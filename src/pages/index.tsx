@@ -1,8 +1,25 @@
 import Button from '@/components/Button';
 import Layout from '@/components/Layout';
-import LazyImage from '@/components/LazyImage';
 import useAuthStore from '@/stores/useAuthStore';
 import Link from 'next/link';
+import { HeartIcon } from '@heroicons/react/outline';
+
+// Nestjs, Postgres, Prisma, Nextjs, TailwindCSS, HeadlessUI, Zustand
+const technologies = [
+  { name: 'NestJS', url: 'https://nestjs.com/' },
+  { name: 'Planetscale (MySql)', url: 'https://planetscale.com/' },
+  { name: 'Prisma', url: 'https://prisma.io/' },
+  { name: 'Nextjs', url: 'https://nextjs.org/' },
+  { name: 'TailwindCSS', url: 'https://tailwindcss.com/' },
+  { name: 'HeadlessUI', url: 'https://headlessui.dev/' },
+  { name: 'Zustand', url: 'https://github.com/pmndrs/zustand' },
+  { name: 'AWS lambda', url: 'https://aws.amazon.com/lambda/' },
+  { name: 'Vercel', url: 'https://vercel.com/' },
+  {
+    name: 'Cloudflare workers (as a reverse proxy)',
+    url: 'https://cloudflare.com/workers/',
+  },
+];
 
 const Home = () => {
   const isLoggedIn = useAuthStore(s => s.isLoggedIn);
@@ -16,120 +33,49 @@ const Home = () => {
           backend and Next.js on the client.
         </p>
 
-        {!isLoggedIn && (
-          <div className='mt-3'>
-            <Link href='/login' passHref>
-              <Button as='a'>Login</Button>
+        <div className='mt-6'>
+          {isLoggedIn ? (
+            <Link href='/profile' passHref>
+              <Button as='a'>View profile</Button>
             </Link>
-            <Link href='/register' passHref>
-              <Button as='a' secondary className='ml-4'>
-                Register
-              </Button>
-            </Link>
-          </div>
-        )}
-        <p className='mt-8'>Technologies used:</p>
-        {/* Nestjs, Postgres, Prisma, Nextjs, TailwindCSS, HeadlessUI, Zustand */}
-        <ul className='mt-2 flex'>
-          <li className='flex items-center'>
-            <div className='flex-shrink-0'>
-              <LazyImage
-                src='/nestjs.svg'
-                width={32}
-                height={32}
-                className='h-8 w-8'
-                alt='Nestjs'
-              />
-            </div>
-            <div className='ml-4'>
-              <p className='text-sm leading-5 font-medium text-gray-900'>Nestjs</p>
-            </div>
-          </li>
-          <li className='flex items-center mt-4'>
-            <div className='flex-shrink-0'>
-              <LazyImage
-                src='/postgres.svg'
-                width={32}
-                height={32}
-                className='h-8 w-8'
-                alt='Postgres'
-              />
-            </div>
-            <div className='ml-4'>
-              <p className='text-sm leading-5 font-medium text-gray-900'>Postgres</p>
-            </div>
-          </li>
-          <li className='flex items-center mt-4'>
-            <div className='flex-shrink-0'>
-              <LazyImage
-                src='/prisma.svg'
-                width={32}
-                height={32}
-                className='h-8 w-8'
-                alt='Prisma'
-              />
-            </div>
-            <div className='ml-4'>
-              <p className='text-sm leading-5 font-medium text-gray-900'>Prisma</p>
-            </div>
-          </li>
-          <li className='flex items-center mt-4'>
-            <div className='flex-shrink-0'>
-              <LazyImage
-                src='/nextjs.svg'
-                width={32}
-                height={32}
-                className='h-8 w-8'
-                alt='Nextjs'
-              />
-            </div>
-            <div className='ml-4'>
-              <p className='text-sm leading-5 font-medium text-gray-900'>Nextjs</p>
-            </div>
-          </li>
-          <li className='flex items-center mt-4'>
-            <div className='flex-shrink-0'>
-              <LazyImage
-                src='/tailwindcss.svg'
-                width={32}
-                height={32}
-                className='h-8 w-8'
-                alt='Tailwindcss'
-              />
-            </div>
-            <div className='ml-4'>
-              <p className='text-sm leading-5 font-medium text-gray-900'>Tailwindcss</p>
-            </div>
-          </li>
-          <li className='flex items-center mt-4'>
-            <div className='flex-shrink-0'>
-              <LazyImage
-                src='/headlessui.svg'
-                width={32}
-                height={32}
-                className='h-8 w-8'
-                alt='HeadlessUI'
-              />
-            </div>
-            <div className='ml-4'>
-              <p className='text-sm leading-5 font-medium text-gray-900'>HeadlessUI</p>
-            </div>
-          </li>
-          <li className='flex items-center mt-4'>
-            <div className='flex-shrink-0'>
-              <LazyImage
-                src='/zustand.svg'
-                width={32}
-                height={32}
-                className='h-8 w-8'
-                alt='Zustand'
-              />
-            </div>
-            <div className='ml-4'>
-              <p className='text-sm leading-5 font-medium text-gray-900'>Zustand</p>
-            </div>
-          </li>
-        </ul>
+          ) : (
+            <>
+              <Link href='/login' passHref>
+                <Button as='a'>Login</Button>
+              </Link>
+              <Link href='/register' passHref>
+                <Button as='a' secondary className='ml-4'>
+                  Register
+                </Button>
+              </Link>
+            </>
+          )}
+        </div>
+        <div className='mt-12'>
+          <p className='text-xl font-medium'>Technologies used:</p>
+          <ul className='mt-3'>
+            {technologies.map(({ name, url }, idx) => (
+              <li key={idx}>
+                <a
+                  className='text-lg font-medium hover:underline underline-offset-2 text-indigo-600'
+                  href={url}
+                  target='_blank'
+                >
+                  {name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <footer className='mt-28 flex justify-center items-center'>
+          <p className='flex justify-center items-center text-lg'>
+            Made with <HeartIcon className='mx-1 w-5 h-5 text-indigo-600' /> by
+            <a href='https://ar1.dev/' target='_blank' className='ml-2 text-indigo-600'>
+              Ahmed
+            </a>
+          </p>
+        </footer>
       </div>
     </Layout>
   );

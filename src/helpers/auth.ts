@@ -21,8 +21,7 @@ export const getSession = async (req: GetServerSidePropsContext['req']) => {
       const { data } = await axios.get<User>('/auth/me', {
         headers: {
           // Host: 'auth.ar1.dev',
-          ...req.headers,
-          // Cookie: cookies,
+          Cookie: cookies,
         },
       });
       store.getState().login({ user: data });

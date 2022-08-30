@@ -8,7 +8,8 @@ type VerifyTokenResponse =
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query;
-  if (!token || !req.headers.cookie) return res.redirect('/');
+  const cookies = req?.headers?.cookie;
+  if (!token || !cookies) return res.redirect('/');
 
   try {
     const { headers, data } = await axios.get<VerifyTokenResponse>(
@@ -16,8 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       {
         headers: {
           // Host: 'auth.ar1.dev',
-          // Cookie: req.headers.cookie,
-          ...req.headers,
+          Cookie: cookies,
         },
       },
     );

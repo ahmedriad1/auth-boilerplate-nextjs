@@ -20,7 +20,7 @@ export const getSession = async (req: GetServerSidePropsContext['req']) => {
     try {
       const { data } = await axios.get<User>('/auth/me', {
         headers: {
-          // Host: new URL(req.url).host,
+          ...req.headers,
           Cookie: cookies,
         },
       });

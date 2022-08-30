@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       `/auth/verify?token=${token}`,
       {
         headers: {
-          ...req.headers,
+          Host: req.headers.host,
           Cookie: req.headers.cookie,
           // Host: new URL(req.url).host,
         },

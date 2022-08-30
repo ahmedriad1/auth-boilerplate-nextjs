@@ -20,16 +20,17 @@ export const getSession = async (req: GetServerSidePropsContext['req']) => {
     try {
       const { data } = await axios.get<User>('/auth/me', {
         headers: {
-          ...req.headers,
+          Host: req.headers.host,
           Cookie: cookies,
         },
       });
       store.getState().login({ user: data });
-      // console.log(data);
+      console.log(data);
       loggedIn = true;
     } catch (err: unknown) {
       const error = err as AxiosError<AuthError>;
       if (error?.response?.data) console.log(error.response.data);
+      else console.log(error);
 
       if (error?.response?.data && 'awaitingSignup' in error?.response?.data) {
         store.getState().sendEmail({ email: error.response.data.email });

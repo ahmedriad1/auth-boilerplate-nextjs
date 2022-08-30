@@ -23,11 +23,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     );
     const awaitingSignup = 'awaitingSignup' in data ? data.awaitingSignup : undefined;
     const cookie = headers['set-cookie'];
-    console.log(data);
+    // console.log(data);
     if (cookie && cookie.length) res.setHeader('set-cookie', cookie);
     return res.redirect(awaitingSignup ? '/register' : '/');
   } catch (e) {
-    if (e.response?.data) console.log(e.response.data);
+    // if (e.response?.data) console.log(e.response.data);
     return res.redirect('/');
   }
 };

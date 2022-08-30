@@ -20,6 +20,15 @@ const technologies = [
     name: 'Docker',
     url: 'https://docker.com',
   },
+  {
+    name: 'Sentry',
+    url: 'https://sentry.io',
+  },
+  {
+    name: 'Sendgrid',
+    url: 'https://sendgrid.com/',
+  },
+  {},
 ];
 
 const Home = () => {

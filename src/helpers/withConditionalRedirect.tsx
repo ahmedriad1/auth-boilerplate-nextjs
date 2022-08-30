@@ -1,34 +1,25 @@
+import useAuthStore, { IAuthState } from '@/stores/useAuthStore';
 import { useRouter } from 'next/router';
 import { isBrowser } from './functions';
 
 export default function withConditionalRedirect({
   WrappedComponent,
-  clientCondition,
-  serverCondition,
+  redirectCondition: redirectConditionFn,
   location,
+}: {
+  WrappedComponent: any;
+  redirectCondition: (auth: IAuthState) => boolean;
+  location: string;
 }) {
   const WithConditionalRedirectWrapper = props => {
     const router = useRouter();
-    const redirectCondition = clientCondition();
+    const auth = useAuthStore();
+    const redirectCondition = redirectConditionFn(auth);
     if (isBrowser() && redirectCondition) {
       router.push(location);
       return null;
     }
     return <WrappedComponent {...props} />;
-  };
-
-  WithConditionalRedirectWrapper.getInitialProps = async ctx => {
-    if (!isBrowser() && ctx.res) {
-      if (serverCondition(ctx)) {
-        ctx.res.writeHead(302, { Location: location });
-        ctx.res.end();
-      }
-    }
-
-    const componentProps =
-      WrappedComponent.getInitialProps && (await WrappedComponent.getInitialProps(ctx));
-
-    return { ...componentProps };
   };
 
   return WithConditionalRedirectWrapper;

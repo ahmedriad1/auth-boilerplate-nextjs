@@ -2,24 +2,33 @@ import { useLayoutEffect } from 'react';
 import createContext from 'zustand/context';
 import { isBrowser } from '@/helpers/functions';
 import create, { StoreApi } from 'zustand';
-import { setToken, setRefreshToken } from '@/helpers/auth';
 import type { UseBoundStore } from 'zustand';
 import type { User } from '@/types';
 
-interface IAuthState {
-  isLoggedIn: boolean;
+export enum AuthStatus {
+  NOT_AUTHENTICATED,
+  AUTHENTICATED,
+  AWAITING_SIGNUP,
+}
+
+export interface IAuthState {
+  status: AuthStatus;
+  email: null | string;
   user: null | User;
-  login: (data: { user: User; token: string; refreshToken?: string }) => any;
+  login: (data: { user: User }) => any;
   updateUser: (user: User) => any;
+  sendEmail: (data: { email: string }) => void;
   logout: () => any;
 }
+
 type IAuthStore = UseBoundStore<StoreApi<IAuthState>>;
 
 let store: IAuthStore;
 
 const initialState = {
-  isLoggedIn: false,
+  status: AuthStatus.NOT_AUTHENTICATED,
   user: null,
+  email: null,
 };
 
 const AuthStoreContext = createContext<IAuthStore>();
@@ -32,19 +41,14 @@ export const initializeAuthStore = (preloadedState = {}) => {
   return create<IAuthState>(set => ({
     ...initialState,
     ...preloadedState,
-    login: ({ user, token, refreshToken }) =>
+    login: ({ user }) =>
       set(_state => {
-        if (refreshToken) setRefreshToken(refreshToken);
-        setToken(token);
-        return { isLoggedIn: true, user };
+        return { status: AuthStatus.AUTHENTICATED, user };
       }),
     updateUser: user => set(_state => ({ user })),
-    logout: () =>
-      set(_state => {
-        setRefreshToken(null);
-        setToken(null);
-        return { isLoggedIn: false, user: null };
-      }),
+    logout: () => set(_state => ({ status: AuthStatus.NOT_AUTHENTICATED, user: null })),
+    sendEmail: ({ email }) =>
+      set(_state => ({ status: AuthStatus.AWAITING_SIGNUP, email })),
   }));
 };
 

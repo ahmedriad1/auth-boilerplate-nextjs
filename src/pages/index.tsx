@@ -1,8 +1,9 @@
 import Button from '@/components/Button';
 import Layout from '@/components/Layout';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore, { AuthStatus } from '@/stores/useAuthStore';
 import Link from 'next/link';
 import { HeartIcon } from '@heroicons/react/outline';
+import { neutralRoute } from '@/helpers/auth';
 
 // Nestjs, Postgres, Prisma, Nextjs, TailwindCSS, HeadlessUI, Zustand
 const technologies = [
@@ -13,24 +14,26 @@ const technologies = [
   { name: 'TailwindCSS', url: 'https://tailwindcss.com/' },
   { name: 'HeadlessUI', url: 'https://headlessui.dev/' },
   { name: 'Zustand', url: 'https://github.com/pmndrs/zustand' },
-  { name: 'AWS lambda', url: 'https://aws.amazon.com/lambda/' },
+  { name: 'Fly.io', url: 'https://fly.io' },
   { name: 'Vercel', url: 'https://vercel.com/' },
   {
-    name: 'Cloudflare workers (as a reverse proxy)',
-    url: 'https://cloudflare.com/workers/',
+    name: 'Docker',
+    url: 'https://docker.com',
   },
 ];
 
 const Home = () => {
-  const isLoggedIn = useAuthStore(s => s.isLoggedIn);
+  const status = useAuthStore(s => s.status);
+
+  const isLoggedIn = status === AuthStatus.AUTHENTICATED;
 
   return (
     <Layout title='Home'>
       <div className='px-4 py-6 sm:px-0'>
         <h1 className='text-3xl font-semibold'>Welcome to Auth boilerplate</h1>
         <p className='text-lg leading-relaxed mt-4'>
-          This is a boilerplate for creating an authentication system with Nest.js for the
-          backend and Next.js on the client.
+          This is a boilerplate for creating a passwordless authentication system with
+          Nest.js for the backend and Next.js on the client.
         </p>
 
         <div className='mt-6'>
@@ -80,5 +83,7 @@ const Home = () => {
     </Layout>
   );
 };
+
+export const getServerSideProps = neutralRoute;
 
 export default Home;

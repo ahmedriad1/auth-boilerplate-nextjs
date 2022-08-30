@@ -1,5 +1,5 @@
 import Button from '@/components/Button';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore, { AuthStatus } from '@/stores/useAuthStore';
 import toast from '../helpers/toast';
 import Form from '@/components/Form';
 import FormInput from '@/components/Form/FormInput';
@@ -9,27 +9,27 @@ import Link from 'next/link';
 import HeadlessLayout from '@/components/HeadlessLayout';
 import withGuest from '@/helpers/withGuest';
 import LazyImage from '@/components/LazyImage';
-import type { AuthenticatedResponse } from '@/types';
+import type { User } from '@/types';
+import { InformationCircleIcon } from '@heroicons/react/outline';
+import withAwaitingSignupGuest from '@/helpers/withAwaitingSignupGuest';
+import { awaitingSignupRoute } from '@/helpers/auth';
 
 const Register = () => {
+  const email = useAuthStore(state => state.email);
+  const awaitingSignup =
+    useAuthStore(state => state.status) === AuthStatus.AWAITING_SIGNUP;
+  const login = useAuthStore(state => state.login);
+
   const schema = yup.object().shape({
     name: yup.string().required(),
-    email: yup.string().email().required(),
-    password: yup.string().min(8).required(),
-    confirm_password: yup
-      .string()
-      .min(8)
-      .oneOf([yup.ref('password'), null], 'Passwords must match')
-      .required(),
   });
 
-  const login = useAuthStore(state => state.login);
-  const [registerMutation, { loading }] = useMutation<AuthenticatedResponse>(
-    '/auth/register',
+  const [registerMutation, { loading }] = useMutation<{ message: string; user: User }>(
+    '/auth/signup',
     {
-      onSuccess({ user, token, refresh_token }) {
-        toast.success('Account created successfully !');
-        login({ user, token, refreshToken: refresh_token });
+      onSuccess({ message, user }) {
+        toast.success(message);
+        login({ user });
       },
     },
   );
@@ -51,41 +51,23 @@ const Register = () => {
               </a>
             </Link>
             <h2 className='mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900'>
-              Create an account
+              Complete your registration
             </h2>
-            <p className='mt-2 text-center text-sm leading-5 text-gray-600'>
-              Or
-              <Link href='/login'>
-                <a className='ml-1 font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150'>
-                  Already have an account ?
-                </a>
-              </Link>
-            </p>
           </div>
           <Form className='mt-8' onSubmit={registerMutation} schema={schema}>
             <div>
-              <div>
+              <div className='flex items-center'>
+                <InformationCircleIcon className='mr-3 w-5 h-5 text-indigo-500' />{' '}
+                Creating account as: <strong className='ml-2'>{email}</strong>
+              </div>
+              <div className='mt-3'>
                 <FormInput name='name' type='text' placeholder='Name' />
-              </div>
-              <div className='mt-3'>
-                <FormInput name='email' type='email' placeholder='Email address' />
-              </div>
-              <div className='mt-3'>
-                <FormInput name='password' type='password' placeholder='Password' />
-              </div>
-
-              <div className='mt-3'>
-                <FormInput
-                  name='confirm_password'
-                  type='password'
-                  placeholder='Confirm Password'
-                />
               </div>
             </div>
 
             <div className='mt-6'>
               <Button loading={loading} full>
-                Register
+                Signup
               </Button>
             </div>
           </Form>
@@ -95,4 +77,5 @@ const Register = () => {
   );
 };
 
-export default withGuest(Register);
+export const getServerSideProps = awaitingSignupRoute;
+export default withAwaitingSignupGuest(Register);

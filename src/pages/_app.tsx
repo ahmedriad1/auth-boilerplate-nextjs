@@ -1,24 +1,15 @@
 import '@/styles/main.css';
-import {
-  AuthStoreProvider,
-  initializeAuthStore,
-  useCreateAuthStore,
-} from '@/stores/useAuthStore';
+import { AuthStoreProvider, useCreateAuthStore } from '@/stores/useAuthStore';
 import { Toaster } from 'react-hot-toast';
-import axios from '@/helpers/axios';
-import { REFRESH_TOKEN_NAME } from '@/helpers/auth';
-import App from 'next/app';
-import { isBrowser } from '@/helpers/functions';
 import type { AppProps } from 'next/app';
-import type { AuthenticatedResponse } from '@/types';
 // import NextApp from 'next/app';
 
 interface MyAppProps extends AppProps {
-  initialZustandState: any;
+  pageProps: { session: any };
 }
 
-const MyApp = ({ Component, pageProps, initialZustandState }: MyAppProps) => {
-  const createStore = useCreateAuthStore(initialZustandState);
+const MyApp = ({ Component, pageProps: { session, ...pageProps } }: MyAppProps) => {
+  const createStore = useCreateAuthStore(session);
 
   return (
     <div className='app relative'>
@@ -30,31 +21,58 @@ const MyApp = ({ Component, pageProps, initialZustandState }: MyAppProps) => {
   );
 };
 
-MyApp.getInitialProps = async appContext => {
-  const appProps = await App.getInitialProps(appContext);
+// MyApp.getInitialProps = async (appContext: AppContext) => {
+//   const appProps = await App.getInitialProps(appContext);
+//   if (isBrowser()) return { ...appProps };
 
-  if (isBrowser()) return { ...appProps };
+//   const store = initializeAuthStore();
+//   const { req, res } = appContext.ctx;
 
-  const store = initializeAuthStore();
+//   let loggedIn = false;
+//   let awaitingSignup = false;
 
-  const request = appContext.ctx.req;
-  const refreshToken = request ? request.cookies[REFRESH_TOKEN_NAME] : null;
+//   const cookies = req!.headers?.cookie as string;
 
-  if (refreshToken) {
-    try {
-      const { data } = await axios.post<AuthenticatedResponse>('/auth/refresh', {
-        refresh_token: refreshToken,
-      });
-      store.getState().login({ user: data.user, token: data.token });
-    } catch (error) {
-      request.cookies[REFRESH_TOKEN_NAME] = null;
-    }
-  }
+//   if (cookies) {
+//     try {
+//       console.log('Checking user...');
 
-  return {
-    ...appProps,
-    initialZustandState: JSON.parse(JSON.stringify(store.getState())),
-  };
-};
+//       const { data } = await axios.get<User>('/auth/me', {
+//         headers: {
+//           // Host: new URL(req.url).host,
+//           Cookie: cookies,
+//         },
+//       });
+//       store.getState().login({ user: data });
+//       // console.log(data);
+//       loggedIn = true;
+//     } catch (err: unknown) {
+//       const error = err as AxiosError<AuthError>;
+//       if (error?.response?.data && 'awaitingSignup' in error?.response?.data) {
+//         store.getState().sendEmail({ email: error.response.data.email });
+//         awaitingSignup = true;
+//       }
+//     }
+//   }
+
+//   // appContext.ctx.loggedIn = loggedIn;
+//   const getInitialProps = appContext.Component?.getInitialProps;
+//   if (getInitialProps) {
+//     const response: any = await getInitialProps({
+//       ...appContext,
+//       loggedIn,
+//       awaitingSignup,
+//     } as any);
+//     if (response?.redirect) {
+//       res.writeHead(302, { Location: response?.redirect });
+//       res.end();
+//     }
+//   }
+
+//   return {
+//     ...appProps,
+//     initialZustandState: JSON.parse(JSON.stringify(store.getState())),
+//   };
+// };
 
 export default MyApp;

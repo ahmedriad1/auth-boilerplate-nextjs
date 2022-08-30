@@ -1,20 +1,31 @@
 import Link from 'next/link';
 import { Menu, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import toast from '@/helpers/toast';
 import LazyImage from '@/components/LazyImage';
 import clsx from 'clsx';
-import useAuthStore from '@/stores/useAuthStore';
+import useAuthStore, { AuthStatus } from '@/stores/useAuthStore';
 import Button from './Button';
+import { useMutation } from '@/helpers/axios';
+
+const useLogout = () => {
+  const clearUserState = useAuthStore(s => s.logout);
+  const [logoutMutation] = useMutation('/auth/logout', {
+    method: 'delete',
+  });
+
+  const logout = useCallback(async e => {
+    e.preventDefault();
+    await logoutMutation();
+    clearUserState();
+    toast.success('Logged out !');
+  }, []);
+
+  return logout;
+};
 
 const ProfileDropdown = () => {
-  const setLogout = useAuthStore(state => state.logout);
-
-  const logout = e => {
-    e.preventDefault();
-    setLogout();
-    toast.success('Logged out !');
-  };
+  const logout = useLogout();
 
   const ProfileLink = ({ active, ...props }: { active: boolean }) => (
     <Link href='/profile'>
@@ -78,13 +89,9 @@ const ProfileDropdown = () => {
 
 const Nav = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const { isLoggedIn, user, logout: setLogout } = useAuthStore();
-
-  const logout = e => {
-    e.preventDefault();
-    setLogout();
-    toast.success('Logged out !');
-  };
+  const { status, user } = useAuthStore();
+  const isLoggedIn = status === AuthStatus.AUTHENTICATED;
+  const logout = useLogout();
 
   return (
     <nav className='bg-gray-800'>

@@ -8,16 +8,16 @@ type VerifyTokenResponse =
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.query;
-  // if (!token || !req.headers.cookie) return res.redirect('/');
+  if (!token || !req.headers.cookie) return res.redirect('/');
 
   try {
     const { headers, data } = await axios.get<VerifyTokenResponse>(
       `/auth/verify?token=${token}`,
       {
         headers: {
-          Host: req.headers.host,
-          Cookie: req.headers.cookie,
-          // Host: new URL(req.url).host,
+          // Host: 'auth.ar1.dev',
+          // Cookie: req.headers.cookie,
+          ...req.headers,
         },
       },
     );

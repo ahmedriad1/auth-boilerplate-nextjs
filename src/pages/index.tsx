@@ -51,16 +51,9 @@ const Home = () => {
               <Button as='a'>View profile</Button>
             </Link>
           ) : (
-            <>
-              <Link href='/login' passHref>
-                <Button as='a'>Login</Button>
-              </Link>
-              <Link href='/register' passHref>
-                <Button as='a' secondary className='ml-4'>
-                  Register
-                </Button>
-              </Link>
-            </>
+            <Link href='/login' passHref>
+              <Button as='a'>Login or create an account</Button>
+            </Link>
           )}
         </div>
         <div className='mt-12'>
